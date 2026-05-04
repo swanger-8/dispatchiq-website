@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DispatchIQ — Field Service, Simplified</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #2B6FED;
+    --blue-2: #1A55CC;
+    
+    
+    --asphalt: #121212;
+    --asphalt-2: #1C1C1C;
+    --concrete: #F5F4F1;
+    --concrete-2: #ECEAE5;
+    --text-dark: #0E0E0E;
+    --text-mid: #444;
+    --text-light: #888;
+    --white: #FAFAF8;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: transparent;
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 48px;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.3s, backdrop-filter 0.3s, border-color 0.3s;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(18,18,18,0.55);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  nav.scrolled {
+    background: rgba(18, 18, 18, 0.82);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-color: rgba(255,255,255,0.07);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-icon img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+  }
+
+  .logo-icon svg { width: 20px; height: 20px; }
+
+  .logo-wordmark {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .logo-wordmark span:first-child { color: var(--blue); }
+  .logo-wordmark span:last-child { color: #aaa; }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: rgba(255,255,255,0.72);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--white); }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-orange {
+    background: var(--blue);
+    color: #fff;
+  }
+  .btn-orange:hover { background: var(--blue-2); transform: translateY(-1px); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--white);
+    border: 1.5px solid rgba(255,255,255,0.25);
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.55); background: rgba(255,255,255,0.05); }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    background: var(--asphalt);
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding-top: 68px;
+  }
+
+  .hero-glow {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    background: radial-gradient(ellipse at 50% 50%, rgba(43,111,237,0.16) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 120px 48px 100px;
+  }
+
+  .hero-text { }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(43,111,237,0.12);
+    border: 1px solid rgba(43,111,237,0.3);
+    border-radius: 100px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--blue);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+
+  .hero-badge-dot {
+    width: 6px; height: 6px;
+    background: var(--blue);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .hero-headline {
+    font-size: clamp(42px, 5vw, 68px);
+    font-weight: 900;
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+    color: var(--white);
+    margin-bottom: 24px;
+    text-wrap: pretty;
+  }
+
+  .hero-headline em {
+    font-style: normal;
+    color: var(--blue);
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.65;
+    max-width: 580px;
+    margin: 0 auto 40px;
+    text-wrap: pretty;
+  }
+
+  .hero-ctas {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .hero-ctas .btn { padding: 14px 28px; font-size: 15px; }
+
+  .hero-trust {
+    margin-top: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .hero-trust-divider {
+    width: 1px; height: 20px;
+    background: rgba(255,255,255,0.12);
+  }
+
+
+
+  /* ── SECTION HELPERS ── */
+  section { width: 100%; }
+
+  .section-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 100px 48px;
+  }
+
+  .label-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.08;
+    text-wrap: pretty;
+  }
+
+  .section-sub {
+    font-size: 17px;
+    line-height: 1.7;
+    text-wrap: pretty;
+    max-width: 560px;
+  }
+
+  /* ── PROBLEM ── */
+  #problem {
+    color: var(--white);
+  }
+
+  #problem .section-sub { color: rgba(255,255,255,0.65); }
+  #problem .section-title { color: var(--white); }
+
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+    margin-top: 64px;
+  }
+
+  .problem-left { }
+
+  .pain-list {
+    list-style: none;
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .pain-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 20px;
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.12);
+    font-size: 15px;
+    color: rgba(255,255,255,0.75);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .pain-icon {
+    width: 32px; height: 32px;
+    background: rgba(43,111,237,0.18);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+
+  .problem-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .stat-card {
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 28px 32px;
+  }
+
+  .stat-card-num {
+    font-size: 48px;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    color: var(--blue);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .stat-card-label {
+    font-size: 15px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.5;
+  }
+
+  /* ── FEATURES ── */
+  #features {
+    background: var(--asphalt);
+    color: var(--white);
+  }
+
+  .features-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 40px;
+    margin-bottom: 56px;
+  }
+
+  .features-header .section-sub {
+    color: rgba(255,255,255,0.55);
+    max-width: 360px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .feature-card {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 30px 26px;
+    transition: border-color 0.25s, transform 0.25s;
+  }
+
+  .feature-card:hover {
+    border-color: rgba(43,111,237,0.5);
+    background: rgba(255,255,255,0.1);
+    transform: translateY(-3px);
+  }
+
+  .feature-icon {
+    width: 44px; height: 44px;
+    background: rgba(43,111,237,0.12);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .feature-icon svg { width: 22px; height: 22px; color: var(--blue); }
+
+  .feature-card h3 {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+  }
+
+  .feature-card p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.6;
+  }
+
+  /* ── VALUE ── */
+  #value {
+    color: var(--white);
+  }
+
+  .value-grid {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    gap: 60px;
+    margin-top: 56px;
+    align-items: start;
+  }
+
+  .value-divider {
+    background: rgba(255,255,255,0.12);
+    align-self: stretch;
+  }
+
+  .value-col-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 24px;
+  }
+
+  .value-col-title {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+    line-height: 1.2;
+    color: var(--white);
+  }
+
+  .value-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .value-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 15px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.5;
+  }
+
+  .value-check {
+    width: 20px; height: 20px;
+    background: var(--blue);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .value-check svg { width: 11px; height: 11px; color: #fff; }
+
+  /* ── METRICS ── */
+  #metrics {
+    background: var(--asphalt-2);
+    color: var(--white);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  #metrics .section-inner {
+    padding-top: 72px;
+    padding-bottom: 72px;
+  }
+
+  .metrics-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+
+  .metric {
+    text-align: center;
+    padding: 28px 20px;
+  }
+
+  .metric-num {
+    font-size: 52px;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    color: var(--blue);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .metric-label {
+    font-size: 14px;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.5;
+  }
+
+  /* ── PRICING ── */
+  #pricing {
+    color: var(--white);
+  }
+
+  .pricing-header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+
+  .pricing-header .section-sub {
+    color: rgba(255,255,255,0.55);
+    margin: 16px auto 0;
+    text-align: center;
+  }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+
+  .pricing-card {
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1.5px solid rgba(255,255,255,0.14);
+    border-radius: 16px;
+    padding: 36px 32px;
+    transition: transform 0.2s;
+    color: var(--white);
+  }
+
+  .pricing-card:hover { transform: translateY(-4px); }
+
+  .pricing-card.featured {
+    background: rgba(255, 107, 0, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-color: rgba(43,111,237,0.9);
+    color: var(--white);
+    position: relative;
+    transform: scale(1.03);
+    box-shadow: 0 20px 80px rgba(43,111,237,0.35);
+  }
+
+  .pricing-card.featured:hover { transform: scale(1.03) translateY(-4px); }
+
+  .featured-badge {
+    position: absolute;
+    top: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--blue);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 100px;
+  }
+
+  .pricing-tier {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 12px;
+  }
+
+  .pricing-price {
+    font-size: 48px;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .pricing-price span {
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: rgba(255,255,255,0.45);
+  }
+
+  .pricing-card.featured .pricing-price span { color: rgba(255,255,255,0.45); }
+
+  .pricing-desc {
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 28px;
+    line-height: 1.5;
+    padding-bottom: 28px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .pricing-card.featured .pricing-desc {
+    color: rgba(255,255,255,0.45);
+    border-color: rgba(255,255,255,0.1);
+  }
+
+  .pricing-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .pricing-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.45;
+  }
+
+  .pricing-card.featured .pricing-features li { color: rgba(255,255,255,0.7); }
+
+  .pricing-check {
+    width: 16px; height: 16px;
+    background: rgba(43,111,237,0.25);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .pricing-check svg { width: 9px; height: 9px; color: var(--blue); }
+
+  .pricing-card .btn { width: 100%; justify-content: center; }
+
+  /* ── FINAL CTA ── */
+  #cta {
+    background: var(--asphalt);
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .cta-glow {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(43,111,237,0.2) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  #cta .section-inner {
+    position: relative;
+    z-index: 2;
+  }
+
+  #cta .section-title { margin-bottom: 20px; }
+
+  #cta .section-sub {
+    color: rgba(255,255,255,0.5);
+    margin: 0 auto 40px;
+    text-align: center;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    color: rgba(255,255,255,0.4);
+    padding: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  .footer-left { display: flex; flex-direction: column; gap: 8px; }
+
+  .footer-tagline {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+    margin-top: 2px;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+  }
+
+  .footer-links a {
+    color: rgba(255,255,255,0.35);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: rgba(255,255,255,0.7); }
+
+  .footer-copy {
+    font-size: 12px;
+    color: rgba(255,255,255,0.2);
+  }
+
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 0 24px; }
+    .nav-links { display: none; }
+    .hero-inner { grid-template-columns: 1fr; padding: 60px 24px; }
+    .problem-grid { grid-template-columns: 1fr; }
+    .features-grid { grid-template-columns: 1fr 1fr; }
+    .features-header { flex-direction: column; align-items: flex-start; }
+    .features-header .section-sub { text-align: left; }
+    .value-grid { grid-template-columns: 1fr; }
+    .value-divider { height: 1px; width: 100%; }
+    .metrics-row { grid-template-columns: 1fr 1fr; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .pricing-card.featured { transform: scale(1); }
+    .section-inner { padding: 72px 24px; }
+    footer { flex-direction: column; align-items: flex-start; padding: 40px 24px; }
+  }
+
+  @media (max-width: 540px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .metrics-row { grid-template-columns: 1fr; }
+  }
+
+
+  /* ── FIXED VIDEO BACKGROUND ── */
+  #bg-video {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  #bg-video-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.18);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* All page content above video */
+  nav { z-index: 100; }
+  section, footer { position: relative; z-index: 2; }
+
+  /* Section overlays — semi-transparent so video shows through */
+  #hero        { background: rgba(0, 0, 0, 0.48); }
+  #problem     { background: rgba(0, 0, 0, 0.52); }
+  #features    { background: rgba(0, 0, 0, 0.50); }
+  #value       { background: rgba(0, 0, 0, 0.52); }
+  #metrics     { background: rgba(0, 0, 0, 0.62); border-color: rgba(255,255,255,0.04); }
+  #pricing     { background: rgba(0, 0, 0, 0.48); }
+  #cta         { background: rgba(0, 0, 0, 0.52); }
+  footer       { background: rgba(0, 0, 0, 0.70); }
+
+  /* ── PROGRESS BAR (fixed bottom) ── */
+  #global-progress {
+    position: fixed;
+    bottom: 0; left: 0;
+    width: 100%;
+    height: 3px;
+    z-index: 200;
+    background: rgba(255,255,255,0.08);
+  }
+
+  #global-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--blue);
+    transition: width 0.05s linear;
+  }
+
+</style>
+</head>
+<body>
+<video id="bg-video" muted playsinline preload="auto" src="uploads/bg-video.mp4"></video>
+<div id="bg-video-overlay"></div>
+<div id="global-progress"><div id="global-progress-fill"></div></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <div class="logo-icon">
+      <img src="uploads/fabcec95a655425cb3b58913b946623b_1777330545_3boqadke.png" alt="DispatchIQ logo">
+    </div>
+    <div class="logo-wordmark">
+      <span>Dispatch</span><span>IQ</span>
+    </div>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#value">How It Works</a></li>
+  </ul>
+
+  <a href="#cta" class="btn btn-orange">Start Free Trial</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        Now live for small contractors
+      </div>
+      <h1 class="hero-headline">
+        Stop juggling.<br>
+        Start <em>dispatching.</em>
+      </h1>
+      <p class="hero-sub">
+        DispatchIQ replaces your scheduling app, your dispatch board, your job tracker, and your payment tool — in one mobile-first app built for the crew that's actually in the field.
+      </p>
+      <div class="hero-ctas" style="align-items: center">
+        <a href="#cta" class="btn btn-orange">Start Free Trial</a>
+        <a href="#features" class="btn btn-ghost" style="align-items: center; justify-content: space-between">See How It Works</a>
+      </div>
+      <div class="hero-trust">
+        <span>No credit card required</span>
+        <div class="hero-trust-divider"></div>
+        <span>Set up in minutes</span>
+        <div class="hero-trust-divider"></div>
+        <span>Cancel anytime</span>
+      </div>
+    </div>
+
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="section-inner">
+    <div class="label-tag">The Problem</div>
+    <h2 class="section-title">Running your business out of four apps<br>isn't a system. It's chaos.</h2>
+
+    <div class="problem-grid">
+      <div class="problem-left">
+        <p class="section-sub">Small contractors doing $500K–$3M a year are stitching together phone calls, Google Sheets, QuickBooks, and Venmo to run their business. Something always falls through the cracks.</p>
+
+        <ul class="pain-list">
+          <li class="pain-item">
+            <div class="pain-icon">📞</div>
+            <div>Jobs booked by phone, written on a whiteboard, and forgotten by Tuesday morning.</div>
+          </li>
+          <li class="pain-item">
+            <div class="pain-icon">📊</div>
+            <div>Scheduling lives in a spreadsheet no one outside the office can access.</div>
+          </li>
+          <li class="pain-item">
+            <div class="pain-icon">💸</div>
+            <div>Payments collected via Venmo or cash — with no record attached to the job.</div>
+          </li>
+          <li class="pain-item">
+            <div class="pain-icon">🔧</div>
+            <div>The tools that could fix this — like ServiceTitan — cost $300–500/mo and aren't built for you.</div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="problem-stats">
+        <div class="stat-card">
+          <div class="stat-card-num">15–20%</div>
+          <div class="stat-card-label">Revenue lost each year to scheduling chaos, missed callbacks, and unbilled work. For a $1M business, that's up to $200K walking out the door.</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-num">$300–500</div>
+          <div class="stat-card-label">Per month for platforms like ServiceTitan — designed for enterprise operators, not the 8-tech HVAC shop trying to grow.</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-num">4 apps</div>
+          <div class="stat-card-label">The average small contractor uses to manage what DispatchIQ handles in one. Every extra tool is a handoff that can fail.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-inner">
+    <div class="features-header">
+      <div>
+        <div class="label-tag">Features</div>
+        <h2 class="section-title">One app. Replaces four.</h2>
+      </div>
+      <p class="section-sub">Everything your team needs in the field and back in the office — no integrations, no workarounds.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <h3>Job Management</h3>
+        <p>Create, assign, and track jobs with visual status indicators that every tech can see in real time. No more "did that job get done?"</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <h3>Customer Management</h3>
+        <p>Search existing customers or add new ones from the field in seconds. Full history, contact info, and job records — always on hand.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+          </svg>
+        </div>
+        <h3>Technician Dispatch</h3>
+        <p>Color-coded availability at a glance. Assign the right tech to the right job in a tap. No more double-booking or silent gaps in the schedule.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <h3>Status System</h3>
+        <p>One consistent set of visual status indicators across every job card, list, and report. Everyone on the team always knows what's happening.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VALUE -->
+<section id="value">
+  <div class="section-inner">
+    <div class="label-tag">How It Works</div>
+    <h2 class="section-title">Better for your business.<br>Better for your customers.</h2>
+
+    <div class="value-grid">
+      <div class="value-col">
+        <div class="value-col-label">For Contractors</div>
+        <div class="value-col-title">More jobs. Less chaos. Faster payments.</div>
+        <ul class="value-list">
+          <li>
+            <div class="value-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Close out more jobs each day with streamlined dispatch and zero scheduling collisions.
+          </li>
+          <li>
+            <div class="value-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Collect payment on-site before the truck leaves the driveway.
+          </li>
+          <li>
+            <div class="value-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Eliminate the end-of-day paperwork pile with automatic job records.
+          </li>
+          <li>
+            <div class="value-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Keep your whole crew aligned without a single group text.
+          </li>
+          <li>
+            <div class="value-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Replace four tools with one — and cut $250+/mo in software costs.
+          </li>
+        </ul>
+      </div>
+
+      <div class="value-divider"></div>
+
+      <div class="value-col">
+        <div class="value-col-label">For Your Customers</div>
+        <div class="value-col-title">Reliable. Professional. Worth calling again.</div>
+        <ul class="value-list">
+          <li>
+            <div class="value-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Automatic job confirmations so customers never wonder if they're on the schedule.
+          </li>
+          <li>
+            <div class="value-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Techs who arrive on time, informed, and with the job history already in hand.
+          </li>
+          <li>
+            <div class="value-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            A clean payment experience — no cash, no apps to install, no awkward moments.
+          </li>
+          <li>
+            <div class="value-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            The professional experience they expect from a contractor they trust with their home.
+          </li>
+        </ul>
+
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METRICS -->
+<section id="metrics">
+  <div class="section-inner">
+    <div class="metrics-row">
+      <div class="metric">
+        <div class="metric-num">15–20%</div>
+        <div class="metric-label">Revenue recovered from scheduling chaos in the first 90 days</div>
+      </div>
+      <div class="metric">
+        <div class="metric-num">4 → 1</div>
+        <div class="metric-label">Apps replaced — scheduling, dispatch, job tracking, payments</div>
+      </div>
+      <div class="metric">
+        <div class="metric-num">$49</div>
+        <div class="metric-label">Starting price per month. Designed for teams of 2–12 technicians</div>
+      </div>
+      <div class="metric">
+        <div class="metric-num">< 5 min</div>
+        <div class="metric-label">Average time to create an account and schedule your first job</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="section-inner">
+    <div class="pricing-header">
+      <div class="label-tag">Pricing</div>
+      <h2 class="section-title">Straightforward pricing.<br>No surprises.</h2>
+      <p class="section-sub">No per-tech fees. No implementation costs. No gotchas. Just one price that covers your whole crew.</p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Starter -->
+      <div class="pricing-card" style="text-align: center; height: 5px">
+        <div class="pricing-tier">Starter</div>
+        <div class="pricing-price">$49<span>/mo</span></div>
+        <p class="pricing-desc">Perfect for solo operators and small crews getting off the spreadsheet for the first time.</p>
+        <ul class="pricing-features">
+          <li>
+            <div class="pricing-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Up to 3 technicians
+          </li>
+          <li>
+            <div class="pricing-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Job creation & dispatch
+          </li>
+          <li>
+            <div class="pricing-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Customer records
+          </li>
+          <li>
+            <div class="pricing-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Mobile app (iOS & Android)
+          </li>
+          <li>
+            <div class="pricing-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Email support
+          </li>
+        </ul>
+        <a href="#" class="btn btn-orange">Get Started</a>
+      </div>
+
+      <!-- Pro (featured) -->
+      <div class="pricing-card featured" style="background-color: rgb(34, 187, 102); height: 5px">
+        <div class="featured-badge">Most Popular</div>
+        <div class="pricing-tier">Pro</div>
+        <div class="pricing-price">$99<span>/mo</span></div>
+        <p class="pricing-desc">The right fit for growing shops ready to run a tighter, faster operation.</p>
+        <ul class="pricing-features">
+          <li>
+            <div class="pricing-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Up to 8 technicians
+          </li>
+          <li>
+            <div class="pricing-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Everything in Starter
+          </li>
+          <li>
+            <div class="pricing-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            In-app payments
+          </li>
+          <li>
+            <div class="pricing-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Real-time dispatch board
+          </li>
+          <li>
+            <div class="pricing-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Job history & reporting
+          </li>
+          <li>
+            <div class="pricing-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Priority support
+          </li>
+        </ul>
+        <a href="#" class="btn btn-orange">Get Started</a>
+      </div>
+
+      <!-- Team -->
+      <div class="pricing-card">
+        <div class="pricing-tier">Team</div>
+        <div class="pricing-price">$179<span>/mo</span></div>
+        <p class="pricing-desc">For established operators running a full crew and ready to scale without adding admin overhead.</p>
+        <ul class="pricing-features">
+          <li>
+            <div class="pricing-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Up to 12 technicians
+          </li>
+          <li>
+            <div class="pricing-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Everything in Pro
+          </li>
+          <li>
+            <div class="pricing-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Multi-location support
+          </li>
+          <li>
+            <div class="pricing-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Advanced analytics dashboard
+          </li>
+          <li>
+            <div class="pricing-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            API access
+          </li>
+          <li>
+            <div class="pricing-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 6 5 9 10 3"/></svg></div>
+            Dedicated onboarding
+          </li>
+        </ul>
+        <a href="#" class="btn btn-orange">Get Started</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section id="cta">
+  <div class="cta-glow"></div>
+  <div class="section-inner">
+    <div class="label-tag">Get Started</div>
+    <h2 class="section-title">Your next job is waiting.</h2>
+    <p class="section-sub">Stop losing revenue to disorganization. Get set up in under five minutes and run your first dispatch today — no credit card, no commitment.</p>
+    <a href="#" class="btn btn-orange" style="padding: 16px 36px; font-size: 16px; display: inline-flex;">Start Your Free Trial</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    <a href="#" class="nav-logo" style="text-decoration:none;">
+      <div class="logo-icon">
+        <img src="uploads/fabcec95a655425cb3b58913b946623b_1777330545_3boqadke.png" alt="DispatchIQ logo">
+      </div>
+      <div class="logo-wordmark">
+        <span>Dispatch</span><span>IQ</span>
+      </div>
+    </a>
+    <div class="footer-tagline">Field Service, Simplified</div>
+  </div>
+
+  <ul class="footer-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#value">How It Works</a></li>
+    <li><a href="#">Privacy</a></li>
+    <li><a href="#">Terms</a></li>
+  </ul>
+
+  <div class="footer-copy">© 2026 DispatchIQ. All rights reserved.</div>
+</footer>
+
+
+
+
+
+
+<script>
+  // Sticky nav
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // Full-page scroll → video scrub (scroll is the ONLY thing that ever moves the video)
+  (function() {
+    const video = document.getElementById('bg-video');
+    const fill = document.getElementById('global-progress-fill');
+    let raf = false;
+
+    // Immediately and permanently pause the video — we own currentTime via scroll only
+    function hardPause() {
+      if (!video.paused) video.pause();
+    }
+
+    // Re-pause on any browser-triggered play attempt
+    video.addEventListener('play', hardPause);
+    video.addEventListener('playing', hardPause);
+    video.addEventListener('timeupdate', hardPause); // belt-and-suspenders
+
+    // Once metadata is ready, park on frame 0 and stay paused
+    video.addEventListener('loadedmetadata', function() {
+      video.currentTime = 0;
+      hardPause();
+    });
+
+    // Also pause as early as possible
+    video.addEventListener('canplay', hardPause);
+    video.addEventListener('canplaythrough', hardPause);
+
+    function update() {
+      raf = false;
+      const scrollTop = window.scrollY;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = Math.max(0, Math.min(1, scrollTop / maxScroll));
+
+      if (video.readyState >= 1 && video.duration) {
+        // Set frame, then immediately re-pause to prevent browser from playing forward
+        video.currentTime = progress * video.duration;
+        video.pause();
+      }
+
+      fill.style.width = (progress * 100).toFixed(2) + '%';
+    }
+
+    window.addEventListener('scroll', function() {
+      if (!raf) { raf = true; requestAnimationFrame(update); }
+    }, { passive: true });
+  })();
+</script>
+<!-- ElevenLabs Voice Widget -->
+<elevenlabs-convai agent-id="agent_7301kqtdnkf2f2svzh1wqn8kn5ax"></elevenlabs-convai>
+<script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+
+</body>
+</html>

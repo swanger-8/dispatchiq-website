@@ -1,0 +1,5 @@
+scrubber_video_b64.txt
+scraps/
+uploads/pasted-*
+uploads/*.napkin
+.vercel
